@@ -47,7 +47,7 @@ hr{border:none;border-top:1px solid #eee;margin:24px 0}
 </style>
 </head>
 <body>
-<main>` + string(html) + `</main>
+<main>` + string(html) + `<hr/><p>IP地址位置数据由<a href="https://www.cz88.net" target="_blank" rel="noopener noreferrer">纯真CZ88</a>提供支持</p></main>
 </body>
 </html>`)
     c.Data(http.StatusOK, "text/html; charset=utf-8", page)
@@ -113,6 +113,7 @@ func renderDynamicDocs(c *gin.Context) {
         "</script>" +
 
         "<hr/><p>更多静态说明请见 <a href='" + base + "/docs' target='_blank'>/docs</a>。</p>" +
+        "<p>IP地址位置数据由<a href='https://www.cz88.net' target='_blank' rel='noopener noreferrer'>纯真CZ88</a>提供支持</p>" +
         "</main></body></html>"
 
     c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
