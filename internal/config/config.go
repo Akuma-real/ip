@@ -5,13 +5,18 @@ import (
     "fmt"
     "os"
     "path/filepath"
+    "strings"
 )
 
 const (
     envListen     = "IP_API_LISTEN"
     envQQwryPath  = "IP_API_QQWRY_PATH"
-    defaultListen = ":8080"
-    defaultData   = "qqwry.dat"
+    envQQwryURL   = "IP_API_QQWRY_URL"
+    envAutoFetch  = "IP_API_AUTO_FETCH"
+
+    defaultListen    = ":8080"
+    defaultData      = "qqwry.dat"
+    defaultDataURL   = "https://github.com/metowolf/qqwry.dat/releases/latest/download/qqwry.dat"
 )
 
 // Config 表示服务运行时所需的核心配置。
@@ -25,6 +30,13 @@ func Load() (*Config, error) {
     cfg := &Config{
         ListenAddr: getOrDefault(envListen, defaultListen),
         QQWryPath:  resolvePath(getOrDefault(envQQwryPath, defaultData)),
+    }
+
+    // 若启用自动获取，则在校验前尝试从远端下载缺失的数据文件
+    if isTruthy(getOrDefault(envAutoFetch, "true")) {
+        if err := ensureQQWryFile(cfg.QQWryPath, getOrDefault(envQQwryURL, defaultDataURL)); err != nil {
+            return nil, err
+        }
     }
 
     if err := cfg.Validate(); err != nil {
@@ -66,4 +78,13 @@ func resolvePath(p string) string {
         return p
     }
     return abs
+}
+
+func isTruthy(v string) bool {
+    switch strings.ToLower(strings.TrimSpace(v)) {
+    case "1", "true", "yes", "on", "y", "t":
+        return true
+    default:
+        return false
+    }
 }

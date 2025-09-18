@@ -42,11 +42,11 @@ func newReader(path string) (*qqwryReader, error) {
 func (r *qqwryReader) lookupRaw(ipStr string) ([]byte, []byte, error) {
     ip := net.ParseIP(ipStr)
     if ip == nil {
-        return nil, nil, fmt.Errorf("无法解析IP: %s", ipStr)
+        return nil, nil, fmt.Errorf("%w: 无法解析IP: %s", ErrInvalidIP, ipStr)
     }
     ipv4 := ip.To4()
     if ipv4 == nil {
-        return nil, nil, errors.New("当前qqwry.dat仅支持IPv4查询")
+        return nil, nil, fmt.Errorf("%w: 当前qqwry.dat仅支持IPv4查询", ErrIPv6NotSupported)
     }
 
     target := binary.BigEndian.Uint32(ipv4)
@@ -92,7 +92,7 @@ func (r *qqwryReader) lookupRaw(ipStr string) ([]byte, []byte, error) {
             goto FOUND
         }
     }
-    return nil, nil, fmt.Errorf("未找到IP %s 的归属信息", ipStr)
+    return nil, nil, fmt.Errorf("%w: 未找到IP %s 的归属信息", ErrNotFound, ipStr)
 
 FOUND:
     country, area := r.readRecord(recordOffset)

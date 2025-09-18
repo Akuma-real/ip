@@ -1,18 +1,18 @@
 # Repository Guidelines
 
 ## 项目结构与模块组织
-- `cmd/server`：Go 程序入口，加载配置并启动 HTTP 服务。
+- `main.go`：Go 程序入口，加载配置并启动 HTTP 服务。
 - `internal/config`：负责读取环境变量、校验并补全 `qqwry.dat` 绝对路径。
 - `internal/ipdb`：封装 QQWry 数据解析、查询与热加载逻辑，是业务核心。
 - `internal/server`：基于 Gin 的路由与处理器集合，统一注入 `ipdb.Service`。
 - `docs/`：存放数据格式与协议说明，可扩展更多运维文档。
-- 根目录包含 `Dockerfile` 与 `qqwry.dat`（运行时挂载），其余生成物请保持忽略。
+- 根目录包含 `Dockerfile`；`qqwry.dat` 不纳入版本控制（构建时下载内置，运行可挂载覆盖），其余生成物请保持忽略。
 
 ## 构建、测试与开发命令
-- `go run ./cmd/server`：本地快速启动，读取当前目录下的 `qqwry.dat`。
-- `go build ./cmd/server`：产出自包含二进制，适合部署到裸机或容器。
+- `go run .`：本地快速启动，读取当前目录下的 `qqwry.dat`。
+- `go build .`：产出自包含二进制，适合部署到裸机或容器。
 - `go test ./... -cover`：运行全部包的单元测试并输出覆盖率，提交前必跑。
-- `docker build -t qqwry-ip-service .` 与 `docker run -p 8080:8080 -v <host>/qqwry.dat:/app/qqwry.dat:ro qqwry-ip-service`：完成容器化验证。
+- `docker build -t qqwry-ip-service .` 与 `docker run -p 8080:8080 qqwry-ip-service`：完成容器化验证（镜像已内置 qqwry.dat；如需覆盖请挂载 `/app/qqwry.dat` 并设置 `IP_API_QQWRY_PATH`）。
 
 ## 代码风格与命名约定
 - 所有 Go 代码执行 `gofmt`，默认使用 Tab 缩进与驼峰式导出命名。

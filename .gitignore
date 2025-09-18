@@ -1,0 +1,11 @@
+# 数据库文件（避免入库）
+qqwry.dat
+*.dat
+
+# 构建产物
+ipservice
+*.exe
+bin/
+build/
+dist/
+

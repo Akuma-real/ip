@@ -11,8 +11,6 @@ type Result struct {
     IP      string
     Country string
     Area    string
-    RawCountry []byte
-    RawArea    []byte
 }
 
 // Service 管理 qqwry 数据的加载与查询，并提供线程安全的对外接口。
@@ -49,22 +47,20 @@ func (s *Service) Lookup(ip string) (Result, error) {
 
     country, err := decodeGBK(countryRaw)
     if err != nil {
-        return Result{}, fmt.Errorf("国家字段编码转换失败: %w", err)
+        return Result{}, fmt.Errorf("%w: 国家字段编码转换失败: %v", ErrDecodeCountry, err)
     }
     area, err := decodeGBK(areaRaw)
     if err != nil {
-        return Result{}, fmt.Errorf("区域字段编码转换失败: %w", err)
+        return Result{}, fmt.Errorf("%w: 区域字段编码转换失败: %v", ErrDecodeArea, err)
     }
 
     country = normalize(country)
     area = normalize(area)
 
     return Result{
-        IP:         ip,
-        Country:    country,
-        Area:       area,
-        RawCountry: countryRaw,
-        RawArea:    areaRaw,
+        IP:      ip,
+        Country: country,
+        Area:    area,
     }, nil
 }
 
